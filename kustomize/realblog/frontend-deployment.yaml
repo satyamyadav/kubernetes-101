@@ -1,0 +1,46 @@
+# frontend service
+apiVersion: v1
+kind: Service
+metadata:
+  name: realblog-ui
+  labels:
+    app: realblog
+spec:
+  ports:
+    - name: "realblog-ui"
+      port: 80
+      targetPort: 80
+      protocol: TCP
+    
+  selector:
+    app: realblog
+    tier: frontend
+  type: LoadBalancer
+
+---
+# frontend deployment
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: realblog-ui
+  labels:
+    app: realblog
+spec:
+  selector:
+    matchLabels:
+      app: realblog
+      tier: frontend
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        app: realblog
+        tier: frontend
+    spec:
+      containers:
+        - image: blog-ui:latest
+          name: realblog
+          imagePullPolicy: Never
+          ports:
+            - containerPort: 80

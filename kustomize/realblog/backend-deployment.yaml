@@ -1,0 +1,56 @@
+# backend service
+apiVersion: v1
+kind: Service
+metadata:
+  name: realblog-api
+  labels:
+    app: realblog
+spec:
+  ports:
+    - name: "realblog-api"
+      port: 3000
+      targetPort: 3000
+  selector:
+    app: realblog
+    tier: backend
+  type: LoadBalancer
+
+---
+# backend deployment
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: realblog-api
+  labels:
+    app: realblog
+spec:
+  selector:
+    matchLabels:
+      app: realblog
+      tier: backend
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        app: realblog
+        tier: backend
+    spec:
+      containers:
+        - image: blog-api:latest
+          name: realblog
+          imagePullPolicy: Never
+          env:
+            - name: DB_HOST
+              value: realblog-postgres
+            - name: DB_NAME
+              value: realworld_blog
+            - name: DB_PASSWORD
+              value: password
+            - name: DB_USER
+              value: realworld
+            - name: SECRET
+              value: secret
+          ports:
+            - containerPort: 3000
+              name: realblog

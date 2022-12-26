@@ -1,0 +1,78 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: realblog-postgres
+  labels:
+    app: realblog
+
+spec:
+  ports:
+    - port: 5432
+  
+  selector:
+    app: realblog
+    tier: postgres
+  
+  clusterIP: None
+
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: postgres-pv-claim
+  labels:
+    app: realblog
+
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 20Gi
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: realblog-postgres
+  labels:
+    app: realblog
+
+spec:
+  selector:
+    matchLabels:
+      app: realblog
+      tier: postgres
+
+  strategy:
+    type: Recreate
+
+  template:
+    metadata:
+      labels:
+        app: realblog
+        tier: postgres
+
+    spec:
+      containers:
+        - image: postgres:15.1
+          name: postgres
+          env:
+            - name: POSTGRES_PASSWORD
+              value: password
+            - name: POSTGRES_USER
+              value: realworld
+            - name: POSTGRES_DB
+              value: realworld_blog
+          ports:
+            - containerPort: 5432
+              name: postgres
+
+          volumeMounts:
+            - name: postgres-persistent-storage
+              mountPath: /var/lib/postgresql/data
+
+      volumes:
+        - name: postgres-persistent-storage
+          persistentVolumeClaim:
+            claimName: postgres-pv-claim

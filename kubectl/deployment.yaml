@@ -1,0 +1,25 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  creationTimestamp: null
+  labels:
+    app: demo-api
+  name: demo-api
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: demo-api
+  strategy: {}
+  template:
+    metadata:
+      creationTimestamp: null
+      labels:
+        app: demo-api
+    spec:
+      containers:
+      - image: demo-api:latest
+        name: demo-api
+        resources: {}
+        imagePullPolicy: Never
+status: {}
