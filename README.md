@@ -509,7 +509,79 @@ We will deploy following services:
 
 	![blog home](./docs/blog_home.png)
 
+### Clean up
+
+1. Now you can clean up the resources you created in your cluster:
+
+	Run the following command from `kustomize/realblog`:
+
+	```shell
+	kubectl delete -k ./
+	```
+
+2. Optionally, stop the Minikube virtual machine (VM):
+
+	```shell
+	minikube stop
+	```
+
+3. Optionally, delete the Minikube VM:
+
+	```shell
+	minikube delete
+	```
+
 ## [HELM](https://helm.sh/docs/)
+
+### Get ready
+
+1. start minikube
+
+	```shell
+	minikube start  --driver=hyperkit --container-runtime=docker
+	```
+
+2. point terminal's Docker CLI to the Docker instance inside minikube
+
+	```shell
+	eval $(minikube docker-env)
+	```
+
+3. build demo-api app image
+
+	```shell
+	cd apps/demo-api
+	docker build -t demo-api .
+	```
+
+
+remove helm/realblog : rm -rf helm/realblog
+cd helm
+helm create realblog
+10432  helm install realblog
+10433  ls
+10434  cd realblog
+10435  helm install realblog .
+10436  helm upgrade realblog .
+10437  eval $(minikube docker-env)
+10438  helm upgrade realblog .
+10439  k get po
+
+in helm/realblog/values.yaml
+
+update `service.port` to 3000 , `image.repository` to "demo-api" `image.tag` to latest
+
+helm upgrade realblog . 
+
+follow on screen instructions  or kubectl --namespace default port-forward deployment/realblog 8080:3000
+
+a page should open like follow
+
+
+kubectl --namespace default port-forward deployment/realblog-realblog-api 80
+
+ingress: update values.yaml.ingress.hosts.host ingress.enabled: true
+
 ## [Argo CD](https://argo-cd.readthedocs.io/en/stable/?_gl=1*iazngm*_ga*MjE4MzA1OTYwLjE2NzIxMzMyNTg.*_ga_5Z1VTPDL73*MTY3MjEzMzI1Ny4xLjAuMTY3MjEzMzI1Ny4wLjAuMA..)
 
 
