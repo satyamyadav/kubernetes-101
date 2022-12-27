@@ -9,6 +9,7 @@
 👉🏼 No Docker desktop needed.
 
 ## Table of contents
+---
 - [System Setup](#system-setup)
 - [kubectl](#kubectl)
 	- [Get ready](#get-ready)
@@ -18,10 +19,12 @@
 - [kustomize](#kustomize)
 	- [Get ready](#get-ready-1)
 	- [Deploy apps](#deploy-apps)
-- [helm](#helm)
+- [HELM](#helm)
+- [Argo CD](#argo-cd)
+- [TO-DO](#to-do)
 
 ## System Setup
-
+---
 1.  install [Docker CLI](https://minikube.sigs.k8s.io/docs/tutorials/docker_desktop_replacement/)
 
 	```shell
@@ -83,7 +86,7 @@
 	![minikube dashboard UI](./docs/dashboard_demo.png)
 
 ## kubectl
-
+---
 ### Get ready
 
 1. start minikube
@@ -268,9 +271,9 @@ Kubernetes cluster. To make the `demo-api` Container accessible from outside.
 	```shell
 	minikube delete
 	```
----
-## kustomize
 
+## kustomize
+---
 In this we will deploy multiple services. To do so we will be using multiple config files for kubernetes and will manage the config with help of [kustomize](https://github.com/kubernetes-sigs/kustomize). This will deploy a proper backend, frontend and db instance to power up a full application stack and use it as we do in production. This example will use the realworld blog app API and UI example apps.
 
 ![kustomize deployment diagram](./docs/k8s_diagram.png)
@@ -506,6 +509,11 @@ We will deploy following services:
 
 	![blog home](./docs/blog_home.png)
 
-## helm
+## [HELM](https://helm.sh/docs/)
+## [Argo CD](https://argo-cd.readthedocs.io/en/stable/?_gl=1*iazngm*_ga*MjE4MzA1OTYwLjE2NzIxMzMyNTg.*_ga_5Z1VTPDL73*MTY3MjEzMzI1Ny4xLjAuMTY3MjEzMzI1Ny4wLjAuMA..)
 
 
+## TO-DO
+
+- Add helm charts flow
+- Add argo CD flow
