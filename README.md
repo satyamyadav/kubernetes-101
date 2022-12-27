@@ -1,10 +1,24 @@
-# kubernetes 101 for developers
+<h1 align="center">
+  kubernetes 101 for developers
+</h1>
 
-> This is a tutorial to deploy basic services with kubectl and helm on kubernetes cluster running on local machine.
+> This is a hands-on tutorial to deploy basic services with kubectl and helm on kubernetes cluster running on local machine.
 
 👉🏼 No cloud account needed.
 
 👉🏼 No Docker desktop needed.
+
+## Table of contents
+- [System Setup](#system-setup)
+- [kubectl](#kubectl)
+	- [Get ready](#get-ready)
+	- [Create a Deployment](#create-a-deployment)
+	- [Create a Service](#create-a-service)
+	- [Clean up](#clean-up)
+- [kustomize](#kustomize)
+	- [Get ready](#get-ready-1)
+	- [Deploy apps](#deploy-apps)
+- [helm](#helm)
 
 ## System Setup
 
