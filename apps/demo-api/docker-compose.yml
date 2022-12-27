@@ -1,8 +1,0 @@
-version: '3.2'
-
-services:
-  demo_api:
-    build: .
-    image: demo-api
-    ports:
-      - 3000:3000
