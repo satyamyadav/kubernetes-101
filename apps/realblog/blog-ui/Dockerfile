@@ -9,6 +9,7 @@ RUN git clone --depth 1 https://github.com/angelguzmaning/ts-redux-react-realwor
 RUN chown -R node:node /home/node/app
 WORKDIR /home/node/app
 RUN npm i
+RUN sed -i -e 's,https://api.realworld.io/,/,g' ./src/config/settings.ts
 RUN npm run build
 USER node
 

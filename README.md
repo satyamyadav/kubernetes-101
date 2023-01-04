@@ -509,11 +509,284 @@ We will deploy following services:
 
 	![blog home](./docs/blog_home.png)
 
+### Clean up
+
+1. Now you can clean up the resources you created in your cluster:
+
+	Run the following command from `kustomize/realblog`:
+
+	```shell
+	kubectl delete -k ./
+	```
+
+2. Optionally, stop the Minikube virtual machine (VM):
+
+	```shell
+	minikube stop
+	```
+
+3. Optionally, delete the Minikube VM:
+
+	```shell
+	minikube delete
+	```
+
 ## [HELM](https://helm.sh/docs/)
+
+We will learn this in two phases, first we will deploy the default nginx app and then our demo-api app, second we will deploy the complete realblog project with db, API and UI services and expose it with the ingress.
+
+
+### Get ready
+
+1. start minikube
+
+	```shell
+	minikube start  --driver=hyperkit --container-runtime=docker
+	```
+
+2. point terminal's Docker CLI to the Docker instance inside minikube
+
+	```shell
+	eval $(minikube docker-env)
+	```
+
+3. build demo-api app image
+
+	```shell
+	cd apps/demo-api
+	docker build -t demo-api .
+	cd ../../
+	```
+### Create a chart with helm CLI
+
+1. switch to helm dir
+
+	```shell
+	cd helm
+	```
+
+2. create helm chart with helm CLI (default template)
+
+	This command creates a directory "realblog" inside which it pusts charts for a service.
+	```shell
+	helm create demo
+	```
+
+3. explore helm chart created
+
+	```shell
+	cd demo
+	ls 
+	```
+	Result should be similar to: 
+
+	```shell
+	Chart.yaml  charts      templates   values.yaml
+	```
+
+4. install the chart
+
+	```shell
+	helm install demo .
+	```
+	Results should be similar to: 
+
+	```shell
+	NAME: demo
+	LAST DEPLOYED: Tue Jan  3 19:46:54 2023
+	NAMESPACE: default
+	STATUS: deployed
+	REVISION: 1
+	NOTES:
+	1. Get the application URL by running these commands:
+		export POD_NAME=$(kubectl get pods --namespace default -l "app.kubernetes.io/name=demo,app.kubernetes.io/instance=demo" -o jsonpath="{.items[0].metadata.name}")
+		export CONTAINER_PORT=$(kubectl get pod --namespace default $POD_NAME -o jsonpath="{.spec.containers[0].ports[0].containerPort}")
+		echo "Visit http://127.0.0.1:8080 to use your application"
+		kubectl --namespace default port-forward $POD_NAME 8080:$CONTAINER_PORT
+	```
+ 
+5. expose the service to access from machine
+	To access the app on http follow on screen instructions  or run 
+
+	```shell
+	kubectl --namespace default port-forward deployment/demo 8080:80
+	```
+	Result should be similar to: 
+
+	```shell
+	Forwarding from 127.0.0.1:8080 -> 80
+	Forwarding from [::1]:8080 -> 80
+	Handling connection for 8080
+	Handling connection for 8080
+	```
+
+6. verify on browser
+
+	Open http://localhost:8080
+	in browser and you should be able to see a nginx welcome screen.
+
+	![helm default app](./docs/helm_default_app.png)
+
+### Deploy demo-api app with helm
+
+1. switch to demo chart created in previous stage
+
+	```shell
+	cd helm/demo		
+	```
+
+2. update chart
+
+	Update the image repository and tag to use demo-api image and latest tag in values.yaml file, to do so in the file `helm/demo/values.yaml` update following:
+	
+	`image.repository : demo-api`
+	
+	`image.tag : latest`
+	
+	`service.port : 3000`
+
+3. upgrade the deployment
+
+	```shell
+	helm upgrade demo .
+	```
+
+	Result should be similar to:
+
+	```shell
+	Release "demo" has been upgraded. Happy Helming!
+	NAME: demo
+	LAST DEPLOYED: Wed Jan  4 12:33:24 2023
+	NAMESPACE: default
+	STATUS: deployed
+	REVISION: 3
+	NOTES:
+	1. Get the application URL by running these commands:
+		export POD_NAME=$(kubectl get pods --namespace default -l "app.kubernetes.io/name=demo,app.kubernetes.io/instance=demo" -o jsonpath="{.items[0].metadata.name}")
+		export CONTAINER_PORT=$(kubectl get pod --namespace default $POD_NAME -o jsonpath="{.spec.containers[0].ports[0].containerPort}")
+		echo "Visit http://127.0.0.1:8080 to use your application"
+		kubectl --namespace default port-forward $POD_NAME 8080:$CONTAINER_PORT
+	```
+
+4. expose the service to access from machine
+	To access the app on http follow on screen instructions  or run 
+
+	```shell
+	kubectl --namespace default port-forward deployment/demo 8080:3000
+	```
+	Result should be similar to: 
+
+	```shell
+	Forwarding from 127.0.0.1:8080 -> 3000
+	Forwarding from [::1]:8080 -> 3000
+	Handling connection for 8080
+	Handling connection for 8080
+	```
+
+6. verify on browser
+
+	Open http://localhost:8080
+	in browser and you should be able to see express app.
+
+	![helm default app](./docs/helm_demo_api.png)
+
+7. delete deployments
+
+	Delete the deployent to avoid confusion while trying next/other stages.
+
+	```shell
+	helm uninstall demo --wait
+	```
+	
+	It should return : 
+
+	```shell
+	release "demo" uninstalled
+	```
+
+### Run realblog stack on helm
+
+1. switch to helm charts directory for realblog
+
+	```shell
+	cd helm/realblog
+	```
+
+2. install charts
+
+	```shell
+	helm install realblog . 
+	```
+  
+	Result should be similar to: 
+
+	```shell
+	NAME: realblog
+	LAST DEPLOYED: Wed Jan  4 12:47:08 2023
+	NAMESPACE: default
+	STATUS: deployed
+	REVISION: 1
+	NOTES:
+	1. Get the application URL by running these commands:
+		http://realblog.local/
+		http://realblog.local/api
+	```
+
+3. Add cluster IP to local hosts entry for dns resolution
+
+	**Get minikube IP**
+	```shell
+	minikube ip
+	```
+	**update your machine's hosts file**
+	```shell
+	sudo vi /etc/hosts
+	```
+	Add the host `realblog.local` to the file and point it to minikube IP. 
+
+	Hosts should look like: 
+
+	```shell
+	127.0.0.1	localhost
+	255.255.255.255	broadcasthost
+	::1             localhost
+
+	192.168.106.3 realblog.local
+	```
+	In this the IP `192.168.106.3` is the IP of cluster node returned by command `minikube ip`
+
+
+4. verify on browser
+
+	Open http://realblog.local/
+	in browser and you should be able to see blog app UI.
+
+	![helm default app](./docs/blog_home.png)
+
+
+### Clean up
+
+1. Now you can clean up the resources you created in your cluster:
+
+	```shell
+	helm uninstall realblog --wait
+	```
+
+2. Optionally, stop the Minikube virtual machine (VM):
+
+	```shell
+	minikube stop
+	```
+
+3. Optionally, delete the Minikube VM:
+
+	```shell
+	minikube delete
+	```
+
 ## [Argo CD](https://argo-cd.readthedocs.io/en/stable/?_gl=1*iazngm*_ga*MjE4MzA1OTYwLjE2NzIxMzMyNTg.*_ga_5Z1VTPDL73*MTY3MjEzMzI1Ny4xLjAuMTY3MjEzMzI1Ny4wLjAuMA..)
 
 
 ## TO-DO
 
-- Add helm charts flow
 - Add argo CD flow
