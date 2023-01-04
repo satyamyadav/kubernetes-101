@@ -8,6 +8,8 @@
 
 👉🏼 No Docker desktop needed.
 
+> This tutorial is composed on Intel based Macbook, all the commands and processes should be same for any other machine except tool installation commands.
+
 ## Table of contents
 ---
 
@@ -97,6 +99,18 @@
 	It should open a dashboard UI in browser like follow:
 	
 	![minikube dashboard UI](./docs/dashboard_demo.png)
+
+9. Install helm
+
+	```shell
+	brew install helm
+	```
+
+10. Install Argo CD CLI
+
+	```shell
+	brew install argocd
+	```
 
 ## kubectl
 ---
