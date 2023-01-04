@@ -1,4 +1,11 @@
 {
     "editor.tabSize": 2,
-    "editor.wordWrap": "bounded"
+    "editor.wordWrap": "bounded",
+    "[markdown]": {
+        "editor.quickSuggestions": {
+            "other": true,
+            "comments": false,
+            "strings": false
+        }
+    }
 }
