@@ -32,9 +32,10 @@
   * [Deploy realblog stack](#deploy-realblog-stack)
   * [Clean up](#clean-up-2)
 - [Argo CD](#argo-cd)
-- [Get ready](#get-ready-3)
+  * [Get ready](#get-ready-3)
   * [create argocd app](#create-argocd-app)
   * [Clean up](#clean-up-3)
+- [References](#references)
 
 <!-- tocstop -->
 
