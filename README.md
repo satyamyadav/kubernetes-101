@@ -10,18 +10,29 @@
 
 ## Table of contents
 ---
+
+<!-- toc -->
+
 - [System Setup](#system-setup)
 - [kubectl](#kubectl)
-	- [Get ready](#get-ready)
-	- [Create a Deployment](#create-a-deployment)
-	- [Create a Service](#create-a-service)
-	- [Clean up](#clean-up)
+  * [Get ready](#get-ready)
+  * [Create a Deployment](#create-a-deployment)
+  * [Create a Service](#create-a-service)
+  * [Clean up](#clean-up)
 - [kustomize](#kustomize)
-	- [Get ready](#get-ready-1)
-	- [Deploy apps](#deploy-apps)
+  * [Get ready](#get-ready-1)
+  * [Deploy apps](#deploy-apps)
+  * [Clean up](#clean-up-1)
 - [HELM](#helm)
+  * [Get ready](#get-ready-2)
+  * [Create a chart with helm CLI](#create-a-chart-with-helm-cli)
+  * [Deploy demo-api app with helm](#deploy-demo-api-app-with-helm)
+  * [Deploy realblog stack](#deploy-realblog-stack)
+  * [Clean up](#clean-up-2)
 - [Argo CD](#argo-cd)
 - [TO-DO](#to-do)
+
+<!-- tocstop -->
 
 ## System Setup
 ---
@@ -704,15 +715,41 @@ We will learn this in two phases, first we will deploy the default nginx app and
 	release "demo" uninstalled
 	```
 
-### Run realblog stack on helm
+### Deploy realblog stack
 
-1. switch to helm charts directory for realblog
+1. start minikube
+
+	```shell
+	minikube start  --driver=hyperkit --container-runtime=docker
+	```
+
+2. point terminal's Docker CLI to the Docker instance inside minikube
+
+	```shell
+	eval $(minikube docker-env)
+	```
+
+3. build blog-api app image
+
+	```shell
+	cd apps/realblog/blog-api
+	docker build -t blog-api .
+	```
+
+4. build blog-ui app image
+
+	```shell
+	cd apps/realblog/blog-ui
+	docker build -t blog-ui .
+	```
+
+5. switch to helm charts directory for realblog
 
 	```shell
 	cd helm/realblog
 	```
 
-2. install charts
+6. install charts
 
 	```shell
 	helm install realblog . 
@@ -732,7 +769,7 @@ We will learn this in two phases, first we will deploy the default nginx app and
 		http://realblog.local/api
 	```
 
-3. Add cluster IP to local hosts entry for dns resolution
+7. Add cluster IP to local hosts entry for dns resolution
 
 	**Get minikube IP**
 	```shell
@@ -756,7 +793,7 @@ We will learn this in two phases, first we will deploy the default nginx app and
 	In this the IP `192.168.106.3` is the IP of cluster node returned by command `minikube ip`
 
 
-4. verify on browser
+8. verify on browser
 
 	Open http://realblog.local/
 	in browser and you should be able to see blog app UI.
