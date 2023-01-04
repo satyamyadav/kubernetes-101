@@ -839,7 +839,7 @@ We will learn this in two phases, first we will deploy the default nginx app and
 
 ## [Argo CD](https://argo-cd.readthedocs.io/en/stable/?_gl=1*iazngm*_ga*MjE4MzA1OTYwLjE2NzIxMzMyNTg.*_ga_5Z1VTPDL73*MTY3MjEzMzI1Ny4xLjAuMTY3MjEzMzI1Ny4wLjAuMA..)
 
-## Get ready
+### Get ready
 
 1. start minikube
 
@@ -974,7 +974,7 @@ We will learn this in two phases, first we will deploy the default nginx app and
 
 7. Use Argo CD UI
 
-  Open https://localhost:8080/ in your browser and you should see login page of the argocd.
+	Open https://localhost:8080/ in your browser and you should see login page of the argocd.
 
 	![argo login page](./docs/argo_login.png)
 
@@ -1000,6 +1000,7 @@ We will learn this in two phases, first we will deploy the default nginx app and
 	```shell
 	argocd login localhost:8080
 	```
+
 	the result should be similar to:
 
 	```shell
@@ -1009,11 +1010,12 @@ We will learn this in two phases, first we will deploy the default nginx app and
 	'admin:login' logged in successfully
 	Context 'localhost:8080' updated
 	```
+	
 	use the same username and password used to login on UI.
 
 ### create argocd app
 
-	In this we will use the same helm charts used for deployment of services and images created in set up section to create deployment through argocd.
+In this we will use the same helm charts used for deployment of services and images created in set up section to create deployment through argocd.
 
 1. create app with CLI
 
