@@ -30,7 +30,9 @@
   * [Deploy realblog stack](#deploy-realblog-stack)
   * [Clean up](#clean-up-2)
 - [Argo CD](#argo-cd)
-- [TO-DO](#to-do)
+- [Get ready](#get-ready-3)
+  * [create argocd app](#create-argocd-app)
+  * [Clean up](#clean-up-3)
 
 <!-- tocstop -->
 
@@ -823,7 +825,221 @@ We will learn this in two phases, first we will deploy the default nginx app and
 
 ## [Argo CD](https://argo-cd.readthedocs.io/en/stable/?_gl=1*iazngm*_ga*MjE4MzA1OTYwLjE2NzIxMzMyNTg.*_ga_5Z1VTPDL73*MTY3MjEzMzI1Ny4xLjAuMTY3MjEzMzI1Ny4wLjAuMA..)
 
+## Get ready
 
-## TO-DO
+1. start minikube
 
-- Add argo CD flow
+	```shell
+	minikube start  --driver=hyperkit --container-runtime=docker
+	```
+
+2. point terminal's Docker CLI to the Docker instance inside minikube
+
+	```shell
+	eval $(minikube docker-env)
+	```
+
+3. build blog-api app image
+
+	```shell
+	cd apps/realblog/blog-api
+	docker build -t blog-api .
+	```
+
+
+4. build blog-ui app image
+
+	```shell
+	cd apps/realblog/blog-ui
+	docker build -t blog-ui .
+	```
+
+5. add domain to hosts
+	
+	**Get minikube IP**
+	```shell
+	minikube ip
+	```
+	**update your machine's hosts file**
+	```shell
+	sudo vi /etc/hosts
+	```
+	Add the host `realblog.local` to the file and point it to minikube IP. 
+
+	Hosts should look like: 
+
+	```shell
+	127.0.0.1	localhost
+	255.255.255.255	broadcasthost
+	::1             localhost
+
+	192.168.106.3 realblog.local
+	```
+
+	In this the IP `192.168.106.3` is the IP of cluster node returned by command `minikube ip`
+
+
+6. Run argo CD 
+
+	```shell
+	kubectl create namespace argocd
+	kubectl apply -n argocd -f https://raw.githubusercontent.com/argoproj/argo-cd/stable/manifests/install.yaml
+	kubectl port-forward svc/argocd-server -n argocd 8080:443
+	```
+	Results should be similar to: 
+
+	```shell
+	namespace/argocd created
+	```
+
+	```shell
+	customresourcedefinition.apiextensions.k8s.io/applications.argoproj.io created
+	customresourcedefinition.apiextensions.k8s.io/applicationsets.argoproj.io created
+	customresourcedefinition.apiextensions.k8s.io/appprojects.argoproj.io created
+	serviceaccount/argocd-application-controller created
+	serviceaccount/argocd-applicationset-controller created
+	serviceaccount/argocd-dex-server created
+	serviceaccount/argocd-notifications-controller created
+	serviceaccount/argocd-redis created
+	serviceaccount/argocd-repo-server created
+	serviceaccount/argocd-server created
+	role.rbac.authorization.k8s.io/argocd-application-controller created
+	role.rbac.authorization.k8s.io/argocd-applicationset-controller created
+	role.rbac.authorization.k8s.io/argocd-dex-server created
+	role.rbac.authorization.k8s.io/argocd-notifications-controller created
+	role.rbac.authorization.k8s.io/argocd-server created
+	clusterrole.rbac.authorization.k8s.io/argocd-application-controller created
+	clusterrole.rbac.authorization.k8s.io/argocd-server created
+	rolebinding.rbac.authorization.k8s.io/argocd-application-controller created
+	rolebinding.rbac.authorization.k8s.io/argocd-applicationset-controller created
+	rolebinding.rbac.authorization.k8s.io/argocd-dex-server created
+	rolebinding.rbac.authorization.k8s.io/argocd-notifications-controller created
+	rolebinding.rbac.authorization.k8s.io/argocd-redis created
+	rolebinding.rbac.authorization.k8s.io/argocd-server created
+	clusterrolebinding.rbac.authorization.k8s.io/argocd-application-controller created
+	clusterrolebinding.rbac.authorization.k8s.io/argocd-server created
+	configmap/argocd-cm created
+	configmap/argocd-cmd-params-cm created
+	configmap/argocd-gpg-keys-cm created
+	configmap/argocd-notifications-cm created
+	configmap/argocd-rbac-cm created
+	configmap/argocd-ssh-known-hosts-cm created
+	configmap/argocd-tls-certs-cm created
+	secret/argocd-notifications-secret created
+	secret/argocd-secret created
+	service/argocd-applicationset-controller created
+	service/argocd-dex-server created
+	service/argocd-metrics created
+	service/argocd-notifications-controller-metrics created
+	service/argocd-redis created
+	service/argocd-repo-server created
+	service/argocd-server created
+	service/argocd-server-metrics created
+	deployment.apps/argocd-applicationset-controller created
+	deployment.apps/argocd-dex-server created
+	deployment.apps/argocd-notifications-controller created
+	deployment.apps/argocd-redis created
+	deployment.apps/argocd-repo-server created
+	deployment.apps/argocd-server created
+	statefulset.apps/argocd-application-controller created
+	networkpolicy.networking.k8s.io/argocd-application-controller-network-policy created
+	networkpolicy.networking.k8s.io/argocd-applicationset-controller-network-policy created
+	networkpolicy.networking.k8s.io/argocd-dex-server-network-policy created
+	networkpolicy.networking.k8s.io/argocd-notifications-controller-network-policy created
+	networkpolicy.networking.k8s.io/argocd-redis-network-policy created
+	networkpolicy.networking.k8s.io/argocd-repo-server-network-policy created
+	networkpolicy.networking.k8s.io/argocd-server-network-policy created
+	```
+
+	```shell
+	Forwarding from 127.0.0.1:8080 -> 8080
+	Forwarding from [::1]:8080 -> 8080
+	Handling connection for 8080
+	Handling connection for 8080
+	```
+
+7. Use Argo CD UI
+
+  Open https://localhost:8080/ in your browser and you should see login page of the argocd.
+
+	![argo login page](./docs/argo_login.png)
+
+	Login with username and password: 
+
+	Username is `admin` and password you can get from following command: 
+
+	```shell
+	kubectl -n argocd get secret argocd-initial-admin-secret -o jsonpath="{.data.password}" | base64 -d; echo
+	```
+
+	After login you should see the app explorer page like follow: 
+
+	![argocd no apps](./docs/argo_no_apps.png)
+
+8. get CLI ready
+
+	You can create app from UI also but this guide will use CLI to create the app.
+
+	- open a new terminal as the cuurent one is used to port farward argo.
+	- Login on argocd CLI
+
+	```shell
+	argocd login localhost:8080
+	```
+	the result should be similar to:
+
+	```shell
+	WARNING: server certificate had error: x509: “Argo CD” certificate is not trusted. Proceed insecurely (y/n)? y
+	Username: admin
+	Password:
+	'admin:login' logged in successfully
+	Context 'localhost:8080' updated
+	```
+	use the same username and password used to login on UI.
+
+### create argocd app
+
+	In this we will use the same helm charts used for deployment of services and images created in set up section to create deployment through argocd.
+
+1. create app with CLI
+
+	```shell
+	argocd app create realblog --repo https://github.com/satyamyadav/kubernetes-101.git --path helm/realblog --dest-server https://kubernetes.default.svc --dest-namespace default
+	```
+
+2. verify on browser
+
+	open https://localhost:8080/applications/argocd/realblog?view=tree&resource=kind%3ADeployment 
+	It should show the deployments. 
+
+	![argo deployments](./docs/argo_deployments.png)
+
+	Sync the app if it is not synced.
+
+3. verify app
+
+	open http://realblog.local you should see the blog app UI home page. 
+
+	![blog home page](./docs/blog_home.png)
+
+
+### Clean up
+
+1. Now you can clean up the resources you created in your cluster:
+	you can delete the app from argocd UI also.
+
+	```shell
+	argocd app delete realblog
+	```
+
+2. Optionally, stop the Minikube virtual machine (VM):
+
+	```shell
+	minikube stop
+	```
+
+3. Optionally, delete the Minikube VM:
+
+	```shell
+	minikube delete
+	```
