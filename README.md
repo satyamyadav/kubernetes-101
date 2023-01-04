@@ -1059,3 +1059,9 @@ In this we will use the same helm charts used for deployment of services and ima
 	```shell
 	minikube delete
 	```
+
+## References
+
+- Kubernetes:	https://kubernetes.io/docs/tutorials/hello-minikube/ 
+- Helm: 			https://helm.sh/
+- ArgoCD:			https://argo-cd.readthedocs.io/en/stable/getting_started/
